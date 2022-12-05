@@ -28,7 +28,7 @@ class SbusTask : public TaskBase{
 
                     printf("%d\n",j);
 
-                    xTaskDelayUntil(&last_wake_time,pdMS_TO_TICKS(50));
+                    xTaskDelayUntil(&last_wake_time,pdMS_TO_TICKS(10));
                 }
                 for(int j = 2000;j>0;j-=10){
                     for(uint8_t i=0;i<18;i++){
@@ -40,7 +40,7 @@ class SbusTask : public TaskBase{
 
                     printf("%d\n",j);
 
-                    xTaskDelayUntil(&last_wake_time,pdMS_TO_TICKS(50));
+                    xTaskDelayUntil(&last_wake_time,pdMS_TO_TICKS(10));
                 }
             }
         }
