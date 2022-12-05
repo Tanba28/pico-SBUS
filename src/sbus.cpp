@@ -55,7 +55,7 @@ uart_id(_uart_id){
     gpio_set_function(_gpio_tx,GPIO_FUNC_UART);
     gpio_set_function(_gpio_rx,GPIO_FUNC_UART);
 
-    uart_set_baudrate(uart_id,9600);
+    uart_set_baudrate(uart_id,100*1000);
     uart_set_format(uart_id,8,2,UART_PARITY_EVEN);
 
     rx_irq_semaphor = xSemaphoreCreateBinary();

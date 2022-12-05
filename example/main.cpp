@@ -18,7 +18,7 @@ class SbusTask : public TaskBase{
             last_wake_time = xTaskGetTickCount();
 
             for(;;){
-                for(int j = 950;j<2000;j+=10){
+                for(int j = 0;j<2000;j+=10){
                     for(uint8_t i=0;i<18;i++){
                         sbus->putChannelValue(i,j);
                     }
@@ -30,7 +30,7 @@ class SbusTask : public TaskBase{
 
                     xTaskDelayUntil(&last_wake_time,pdMS_TO_TICKS(50));
                 }
-                for(int j = 2000;j>950;j-=10){
+                for(int j = 2000;j>0;j-=10){
                     for(uint8_t i=0;i<18;i++){
                         sbus->putChannelValue(i,j);
                     }
