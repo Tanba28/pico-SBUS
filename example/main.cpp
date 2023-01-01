@@ -3,16 +3,16 @@
 #include "stdio.h"
 #include "task_base.hpp"
 
-class SbusTask : public TaskBase{
+class SbusSendTask : public TaskBase{
     public:
-        SbusTask():TaskBase("sbus_task",3,256){
+        SbusSendTask():TaskBase("sbus_send_task",3,256){
             this->createTask();
+            SBUS::createInstance(uart1,4,5);
         }
     private:
         void task() override{
             TickType_t last_wake_time;
 
-            SBUS::createInstance(uart1,8,9);
             SBUS *sbus = SBUS::getInstance();
 
             last_wake_time = xTaskGetTickCount();
@@ -24,9 +24,9 @@ class SbusTask : public TaskBase{
                     }
                     sbus->sendData();
 
-                    gpio_put(25,!gpio_get(25));
+                    gpio_put(18,!gpio_get(18));
 
-                    printf("%d\n",j);
+                    printf("[SEND]%d\n",j);
 
                     xTaskDelayUntil(&last_wake_time,pdMS_TO_TICKS(10));
                 }
@@ -36,24 +36,53 @@ class SbusTask : public TaskBase{
                     }
                     sbus->sendData();
 
-                    gpio_put(25,!gpio_get(25));
+                    gpio_put(18,!gpio_get(18));
 
-                    printf("%d\n",j);
+                    printf("[SEND]%d\n",j);
 
                     xTaskDelayUntil(&last_wake_time,pdMS_TO_TICKS(10));
                 }
             }
         }
 };
+
+class SbusReadTask : public TaskBase{
+    public:
+        SbusReadTask():TaskBase("sbus_read_task",3,256){
+            this->createTask();
+        }
+    private:
+        void task() override{
+            SBUS *sbus = SBUS::getInstance();
+
+            uint16_t value[18];
+
+            for(;;){
+                sbus->readRaw();
+
+                for(int i=0;i<18;i++){
+                    value[i] = sbus->getChannelValue(i);
+                }
+                printf("[READ]%d\n",value[0]);
+            }
+        }
+};
 int main(){
     stdio_init_all();
 
-    gpio_init(25);
-    gpio_set_dir(25, GPIO_OUT);
+    gpio_init(18);
+    gpio_init(19);
+    gpio_init(20);
+    gpio_set_dir(18, GPIO_OUT);
+    gpio_set_dir(19, GPIO_OUT);
+    gpio_set_dir(20, GPIO_OUT);
 
-    gpio_put(25,1);
+    gpio_put(18,0);
+    gpio_put(19,1);
+    gpio_put(20,1);
 
-    SbusTask sbus_task = SbusTask();
+    SbusSendTask sbus_send_task = SbusSendTask();
+    SbusReadTask sbus_read_task = SbusReadTask();
 
     vTaskStartScheduler();
     for(;;){

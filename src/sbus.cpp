@@ -96,7 +96,7 @@ uart_id(_uart_id){
         &c,
         NULL,
         &uart_get_hw(uart_id)->dr,
-        25,
+        24,
         false
     );
 
@@ -125,7 +125,15 @@ void SBUS::sendData(){
 
 void SBUS::readRaw(){
     Raw raw;
-    dma_channel_set_write_addr(rx_dma_chan,&raw.byte[0],true);
+    char c;
+    while(1){
+        c = uart_getc(uart_id);
+        if(c==0x0F){
+            raw.byte[0] = 0x0F;
+            dma_channel_set_write_addr(rx_dma_chan,&raw.byte[1],true);
+            break;
+        }
+    }
     xSemaphoreTake(rx_irq_semaphor,portMAX_DELAY);
 
     read_data = decode(raw);
